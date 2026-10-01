@@ -112,13 +112,16 @@ SOURCES = {
     "GEO": {"enabled": True, "cap": 400},
     "Zenodo": {"enabled": True, "cap": 300},
     "CELLxGENE": {"enabled": True, "cap": 500},
-    "HuBMAP": {"enabled": True, "cap": 300},
-    # Added later on the same interface:
-    "ENA": {"enabled": False, "cap": 300},
-    "GDC": {"enabled": False, "cap": 300},
-    "HTAN": {"enabled": False, "cap": 300},
-    "figshare": {"enabled": False, "cap": 200},
+    "HuBMAP": {"enabled": True, "cap": 400},
+    "ENA": {"enabled": True, "cap": 300},
+    "GDC": {"enabled": True, "cap": 120},      # ~93 projects (reference set)
+    "figshare": {"enabled": True, "cap": 150},  # detail fetch per article (slower)
+    "IDR": {"enabled": True, "cap": 300},      # projects + screens (reference set)
+    # HTAN manifest is ~385 MB; run occasionally for seeding, not weekly.
+    # Set HTAN_MANIFEST to a local cache to avoid re-downloading.
+    "HTAN": {"enabled": False, "cap": 20},
+    # Not yet integrated — no reliable public API:
+    #   10xGenomics (bot-blocked HTML/Algolia), SODB (SPA, no public API found).
     "10xGenomics": {"enabled": False, "cap": 200},
-    "IDR": {"enabled": False, "cap": 200},
     "SODB": {"enabled": False, "cap": 200},
 }

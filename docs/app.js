@@ -9,6 +9,7 @@ const I18N = {
     train_only: "학습 가능만 (CC0/CC-BY)",
     spatial_only: "공간 데이터만",
     new_only: "이번 주 신규만",
+    hide_dup: "중복 의심 숨기기",
     fav_only: "★ 즐겨찾기만",
     reset: "초기화",
     export: "CSV 내보내기",
@@ -17,7 +18,7 @@ const I18N = {
     trainable: "학습 가능(CC0/CC-BY)", updated: "최종 갱신", sources: "소스별",
     results: "건 표시", of: " / 전체 ",
     c_fav: "★", c_new: "NEW", c_name: "데이터셋", c_source: "소스",
-    c_modality: "모달리티", c_platform: "플랫폼", c_size: "크기",
+    c_modality: "모달리티", c_cancer: "암종", c_platform: "플랫폼", c_size: "크기",
     c_license: "라이선스/학습", c_organism: "생물종", c_org: "기관(만든곳)",
     c_date: "게시일",
     all: "전체", f_source: "소스", f_modality: "모달리티", f_platform: "플랫폼",
@@ -31,6 +32,7 @@ const I18N = {
     train_only: "Train-usable only (CC0/CC-BY)",
     spatial_only: "Spatial only",
     new_only: "New this week only",
+    hide_dup: "Hide suspected duplicates",
     fav_only: "★ Favorites only",
     reset: "Reset",
     export: "Export CSV",
@@ -39,7 +41,7 @@ const I18N = {
     trainable: "Train-usable (CC0/CC-BY)", updated: "Last updated", sources: "By source",
     results: " shown", of: " / of ",
     c_fav: "★", c_new: "NEW", c_name: "Dataset", c_source: "Source",
-    c_modality: "Modality", c_platform: "Platform", c_size: "Size",
+    c_modality: "Modality", c_cancer: "Cancer type", c_platform: "Platform", c_size: "Size",
     c_license: "License/Train", c_organism: "Organism", c_org: "Organization",
     c_date: "Published",
     all: "All", f_source: "Source", f_modality: "Modality", f_platform: "Platform",
@@ -134,6 +136,7 @@ function computeView() {
   const trainOnly = document.getElementById("trainOnly").checked;
   const spatialOnly = document.getElementById("spatialOnly").checked;
   const newOnly = document.getElementById("newOnly").checked;
+  const hideDup = document.getElementById("hideDup").checked;
   const favOnly = document.getElementById("favOnly").checked;
 
   VIEW = DATA.filter((r) => {
@@ -146,6 +149,7 @@ function computeView() {
     if (trainOnly && !["usable", "attribution"].includes(r.train_usability)) return false;
     if (spatialOnly && !r.is_spatial) return false;
     if (newOnly && !r.new_this_week) return false;
+    if (hideDup && r.possible_duplicate) return false;
     if (favOnly && !favs.has(r.id)) return false;
     return true;
   });
@@ -175,6 +179,7 @@ const COLS = [
   { key: "name", label: "c_name", sortable: true },
   { key: "source", label: "c_source", sortable: true },
   { key: "modality", label: "c_modality", sortable: true },
+  { key: "cancer_type", label: "c_cancer", sortable: true },
   { key: "platform", label: "c_platform", sortable: true },
   { key: "size", label: "c_size", sortable: true },
   { key: "train_usability", label: "c_license", sortable: true },
@@ -244,6 +249,7 @@ function renderRows() {
       </td>
       <td><span class="src-pill">${esc(r.source)}</span></td>
       <td>${tags(r.modality, SPATIAL_MODS)}</td>
+      <td>${tags(r.cancer_type)}</td>
       <td>${esc(r.platform || "")}</td>
       <td>${esc(r.size || "")}</td>
       <td><span class="badge b-${r.train_usability}">${r.train_usability}</span> ${lic}</td>
@@ -323,13 +329,13 @@ function bindEvents() {
   document.getElementById("search").addEventListener("input", () => {
     clearTimeout(d); d = setTimeout(() => { page = 1; render(); }, 200);
   });
-  for (const id of ["trainOnly", "spatialOnly", "newOnly", "favOnly"]) {
+  for (const id of ["trainOnly", "spatialOnly", "newOnly", "hideDup", "favOnly"]) {
     document.getElementById(id).addEventListener("change", () => { page = 1; render(); });
   }
   document.getElementById("reset").addEventListener("click", () => {
     document.getElementById("search").value = "";
     FACETS.forEach((k) => (document.getElementById("f_" + k).value = ""));
-    ["trainOnly", "spatialOnly", "newOnly", "favOnly"].forEach((id) =>
+    ["trainOnly", "spatialOnly", "newOnly", "hideDup", "favOnly"].forEach((id) =>
       (document.getElementById(id).checked = false));
     page = 1; render();
   });

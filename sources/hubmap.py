@@ -35,7 +35,14 @@ class HubmapAdapter(SourceAdapter):
             ],
             "query": {
                 "bool": {
-                    "must": [{"term": {"entity_type.keyword": "Dataset"}}],
+                    "must": [
+                        {"term": {"entity_type.keyword": "Dataset"}},
+                        # Primary (user-submitted) datasets only — excludes
+                        # processed derivatives ("Central Process",
+                        # "Multi-Assay Split") that reuse the same titles and
+                        # otherwise look like duplicates.
+                        {"term": {"creation_action.keyword": "Create Dataset Activity"}},
+                    ],
                     "should": [
                         {"match": {"data_types": a}} for a in _SPATIAL_ASSAYS
                     ] + [{"match": {"mapped_data_types": a}} for a in _SPATIAL_ASSAYS],
@@ -63,9 +70,12 @@ class HubmapAdapter(SourceAdapter):
             if osamples and isinstance(osamples, list):
                 organ = osamples[0].get("organ")
             hid = src.get("hubmap_id", uuid)
+            base_title = src.get("title") or f"{', '.join(dtypes)} — {organ or 'tissue'}"
+            # Always suffix the HuBMAP ID so near-identical auto-generated
+            # titles remain distinguishable in the table.
             records.append({
                 "id": f"HUBMAP:{hid}",
-                "name": src.get("title") or f"{', '.join(dtypes)} — {organ or 'tissue'} ({hid})",
+                "name": f"{base_title} [{hid}]",
                 "source": "HuBMAP",
                 "url": f"https://portal.hubmapconsortium.org/browse/dataset/{uuid}",
                 "organism": "Homo sapiens",

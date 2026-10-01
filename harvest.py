@@ -13,6 +13,7 @@ Usage:
 import argparse
 import json
 import os
+import re
 from datetime import date, datetime, timedelta, timezone
 
 import config
@@ -21,6 +22,11 @@ from sources.geo import GEOAdapter
 from sources.zenodo import ZenodoAdapter
 from sources.cellxgene import CellxgeneAdapter
 from sources.hubmap import HubmapAdapter
+from sources.ena import ENAAdapter
+from sources.gdc import GDCAdapter
+from sources.figshare import FigshareAdapter
+from sources.idr import IDRAdapter
+from sources.htan import HTANAdapter
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 DOCS = os.path.join(HERE, "docs")
@@ -32,6 +38,11 @@ REGISTRY = {
     "Zenodo": ZenodoAdapter,
     "CELLxGENE": CellxgeneAdapter,
     "HuBMAP": HubmapAdapter,
+    "ENA": ENAAdapter,
+    "GDC": GDCAdapter,
+    "figshare": FigshareAdapter,
+    "IDR": IDRAdapter,
+    "HTAN": HTANAdapter,
 }
 
 
@@ -125,6 +136,22 @@ def harvest(args):
     catalog.sort(key=lambda r: (r.get("published_date") or "", r.get("first_seen") or ""),
                  reverse=True)
 
+    # Flag suspected duplicates: records (across all sources) whose normalized
+    # title collides with an already-seen one. The first (newest) is canonical;
+    # later ones are flagged so the UI can optionally hide them. Nothing is
+    # dropped — distinct accessions sharing a title are still real datasets.
+    seen_names = set()
+    dup_count = 0
+    for rec in catalog:
+        key = re.sub(r"[^a-z0-9]+", " ", (rec.get("name") or "").lower()).strip()
+        if key and key in seen_names:
+            rec["possible_duplicate"] = True
+            dup_count += 1
+        else:
+            rec["possible_duplicate"] = False
+            if key:
+                seen_names.add(key)
+
     os.makedirs(DOCS, exist_ok=True)
     with open(CATALOG, "w", encoding="utf-8") as f:
         json.dump(catalog, f, ensure_ascii=False, indent=1)
@@ -135,6 +162,7 @@ def harvest(args):
         "since": since.strftime("%Y-%m-%d"),
         "total": len(catalog),
         "new_this_week": new_count,
+        "possible_duplicates": dup_count,
         "per_source": per_source,
         "source_totals": _source_totals(catalog),
     }
