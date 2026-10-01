@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Public Oncology Omics Dataset Monitor</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<header class="topbar">
+  <div class="title-wrap">
+    <h1 data-i18n="title">공개 Oncology 오믹스 데이터 모니터</h1>
+    <p class="subtitle" data-i18n="subtitle">공간전사체 · 공간단백체 중심 · 라이선스/학습가능성 태깅 · 매주 자동 갱신</p>
+  </div>
+  <div class="header-right">
+    <button id="langToggle" class="lang-btn">EN</button>
+  </div>
+</header>
+
+<section class="stats" id="stats"></section>
+
+<section class="toolbar">
+  <input type="search" id="search" class="search" data-i18n-ph="search_ph"
+         placeholder="이름·설명·기관 검색…">
+  <div class="facets" id="facets"></div>
+  <div class="quick">
+    <label class="chip"><input type="checkbox" id="trainOnly"><span data-i18n="train_only">학습 가능만 (CC0/CC-BY)</span></label>
+    <label class="chip"><input type="checkbox" id="spatialOnly"><span data-i18n="spatial_only">공간 데이터만</span></label>
+    <label class="chip"><input type="checkbox" id="newOnly"><span data-i18n="new_only">이번 주 신규만</span></label>
+    <label class="chip"><input type="checkbox" id="favOnly"><span data-i18n="fav_only">★ 즐겨찾기만</span></label>
+    <button id="reset" class="reset-btn" data-i18n="reset">초기화</button>
+    <button id="exportCsv" class="export-btn" data-i18n="export">CSV 내보내기</button>
+  </div>
+</section>
+
+<section class="result-info"><span id="resultCount"></span></section>
+
+<div class="table-wrap">
+  <table id="grid">
+    <thead><tr id="headrow"></tr></thead>
+    <tbody id="rows"></tbody>
+  </table>
+</div>
+
+<nav class="pager" id="pager"></nav>
+
+<footer class="foot">
+  <span data-i18n="foot">메타데이터만 수집 · 데이터는 각 소스에서 제공 · </span>
+  <a href="https://github.com/minsung1013/omics_data_dashboard" target="_blank" rel="noopener">GitHub</a>
+</footer>
+
+<script src="app.js"></script>
+</body>
+</html>
