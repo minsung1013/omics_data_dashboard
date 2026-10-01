@@ -1,14 +1,14 @@
 {
  "last_run": "2026-10-01",
- "generated_at": "2026-10-01T02:17:55+00:00",
- "since": "2025-04-09",
+ "generated_at": "2026-10-01T02:22:55+00:00",
+ "since": "2026-09-29",
  "total": 1149,
- "new_this_week": 1149,
+ "new_this_week": 0,
  "per_source": {
-  "GEO": 373,
-  "Zenodo": 255,
-  "CELLxGENE": 221,
-  "HuBMAP": 300
+  "GEO": 88,
+  "Zenodo": 11,
+  "CELLxGENE": 3,
+  "HuBMAP": 0
  },
  "source_totals": {
   "Zenodo": 255,
