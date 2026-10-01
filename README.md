@@ -17,10 +17,24 @@
 | **GEO** | NCBI GEO Series (oncology + spatial) | 미표기(open) |
 | **Zenodo** | 논문 보충 데이터/코드 (명시적 라이선스) | CC-BY / 기타 |
 | **CELLxGENE** | 큐레이션 sc/spatial (CZI) | CC-BY 4.0 |
-| **HuBMAP** | CODEX/IMC/MERFISH/Xenium 등 **공간 단백체 포함** | CC-BY 4.0 |
+| **HuBMAP** | CODEX/IMC/MERFISH/Xenium 등 **공간 단백체 포함** (primary dataset만) | CC-BY 4.0 |
+| **ENA** | EBI ENA study-level (SRA 유럽 미러) | 미표기(open) |
+| **GDC** | NCI GDC 프로젝트 (TCGA/CPTAC/TARGET 등 레퍼런스) | 혼합(open+controlled) |
+| **figshare** | 논문 보충 데이터 (명시적 라이선스) | CC-BY / 기타 |
+| **IDR** | Image Data Resource — 이미징/**공간 단백체**(IMC/CODEX/MIBI) | CC-BY 4.0 |
+| **HTAN** | Human Tumor Atlas Network — atlas 단위(14) | CC-BY 4.0 |
 
-추가 예정(동일 인터페이스): ENA, GDC/TCGA, HTAN, figshare, 10x Genomics, IDR, SODB.
 `config.py`의 `SOURCES`에서 on/off 및 소스별 상한을 조정합니다.
+
+> **HTAN**은 포털 매니페스트가 ~385MB라 매주 CI에선 기본 비활성(`enabled=False`)이며,
+> 시드 시 1회만 수집합니다. `HTAN_MANIFEST`에 로컬 캐시 경로를 주면 재다운로드 없이 실행됩니다.
+> **10x Genomics / SODB**는 공개 API가 없고(봇 차단/비공개 SPA) 안정적 수집이 어려워 보류했습니다.
+
+## 중복 처리
+- 소스별 고유 id로 1차 중복제거(동일 데이터셋 재수집 방지).
+- 서로 다른 accession이지만 제목이 같은 레코드(ENA 재등록, GEO Super/SubSeries, 소스 간
+  동일 연구 등)는 `possible_duplicate`로 **표시만** 하고 삭제하지 않음 → UI "중복 의심 숨기기"
+  토글로 선택적으로 숨김.
 
 ## 라이선스 / 학습가능성 분류
 원시 라이선스를 다음 `train_usability`로 매핑합니다 (`license.py`):
